@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace FancyCalc
 {
@@ -31,33 +29,69 @@ namespace FancyCalc
         //generic calc method. usage: "10 + 20"  => result 30
         public double Culculate(string expression)
         {
-            string[] words = expression.Split(' ');
-            switch (words[1])
+            double result = 0;
+            string[] values = new string[2];
+            List<string> replaceWords = new List<string>();
+            if (expression == null)
             {
-                case ("+"):
-                    return Convert.ToDouble(words[0]) + Convert.ToDouble(words[2]);
-                    break;
-                case ("-"):
-                    return Convert.ToDouble(words[0]) - Convert.ToDouble(words[2]);
-                    break;
-                case ("*"):
-                    return Convert.ToDouble(words[0]) * Convert.ToDouble(words[2]);
-                    break;
-                case ("/"):
-                    if (Convert.ToInt16(words[2]) != 0)
-                    {
-                        return Convert.ToDouble(words[0]) / Convert.ToDouble(words[2]);
-                    }
-                    else
-                    {
-                        throw new System.DivideByZeroException();
-                    }
-                    break;
-                default:
-                    throw new NotImplementedException();
-                    break;
+                throw new ArgumentNullException();
             }
-
+            else
+            {
+                for (int i = 0; i < expression.Length; i++)
+                {
+                    switch (expression[i])
+                    {
+                        case ('+'):
+                            values = expression.Split('+');
+                            for (int j = 0; j < values.Length; j++)
+                            {
+                                string replaced = Regex.Replace(values[j], @"[^0-9$,]", "");
+                                replaceWords.Add(replaced);
+                            }
+                            if (replaceWords[0] != "" || replaceWords[1] != "")
+                                result = Convert.ToDouble(replaceWords[0]) + Convert.ToDouble(replaceWords[1]);
+                            break;
+                        case ('-'):
+                            values = expression.Split('-');
+                            for (int j = 0; j < values.Length; j++)
+                            {
+                                string replaced = Regex.Replace(values[j], @"[^0-9$,]", "");
+                                replaceWords.Add(replaced);
+                            }
+                            if (replaceWords[0] != "" || replaceWords[1] != "")
+                                result = Convert.ToDouble(replaceWords[0]) - Convert.ToDouble(replaceWords[1]);
+                            break;
+                        case ('*'):
+                            values = expression.Split('*');
+                            for (int j = 0; j < values.Length; j++)
+                            {
+                                string replaced = Regex.Replace(values[j], @"[^0-9$,]", "");
+                                replaceWords.Add(replaced);
+                            }
+                            if (replaceWords[0] != "" || replaceWords[1] != "")
+                                result = Convert.ToDouble(replaceWords[0]) * Convert.ToDouble(replaceWords[1]);
+                            break;
+                        case ('/'):
+                            values = expression.Split('/');
+                            for (int j = 0; j < values.Length; j++)
+                            {
+                                string replaced = Regex.Replace(values[j], @"[^0-9$,]", "");
+                                replaceWords.Add(replaced);
+                            }
+                            if (Convert.ToInt16(values[1]) != 0 || replaceWords[0] != "" || replaceWords[1] != "")
+                            {
+                                result = Convert.ToDouble(replaceWords[0]) / Convert.ToDouble(replaceWords[1]);
+                            }
+                            else
+                            {
+                                throw new System.DivideByZeroException();
+                            }
+                            break;
+                    }
+                }
+                return result;
+            }
         }
     }
 }
